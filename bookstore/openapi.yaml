@@ -1,0 +1,520 @@
+openapi: 3.0.3
+info:
+  title: BookHaven API
+  description: |
+    REST API for the BookHaven online bookstore platform.
+    Supports authentication, book catalogue browsing, shopping cart,
+    order management, and user profile with gift points.
+  version: 1.0.0
+  contact:
+    name: BookHaven Support
+    email: api@bookhaven.example.com
+
+servers:
+  - url: http://127.0.0.1:5001/api
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: User authentication and registration
+  - name: Books
+    description: Book catalogue, categories, brands, search
+  - name: Orders
+    description: Order management, placement, cancellation
+  - name: Users
+    description: User profile, addresses, recommendations
+
+paths:
+  # ─── Auth ────────────────────────────────────────────────
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: alex@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  example: Jane Smith
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+      responses:
+        "201":
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "409":
+          description: Email already registered
+
+  # ─── Books ───────────────────────────────────────────────
+  /books:
+    get:
+      tags: [Books]
+      summary: List books with optional filtering and sorting
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            example: Fiction
+        - name: brand
+          in: query
+          schema:
+            type: string
+            example: Bloomsbury
+        - name: q
+          in: query
+          description: Full-text search across title, author, tags
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [price_asc, price_desc, rating]
+      responses:
+        "200":
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  books:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Book"
+                  total:
+                    type: integer
+
+  /books/categories:
+    get:
+      tags: [Books]
+      summary: Get all available categories
+      responses:
+        "200":
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: string
+
+  /books/brands:
+    get:
+      tags: [Books]
+      summary: Get all available publishers/brands
+      responses:
+        "200":
+          description: Brand list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  brands:
+                    type: array
+                    items:
+                      type: string
+
+  /books/featured:
+    get:
+      tags: [Books]
+      summary: Get featured bestseller books
+      responses:
+        "200":
+          description: Featured books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  books:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Book"
+
+  /books/{id}:
+    get:
+      tags: [Books]
+      summary: Get a book by ID with estimated delivery and related books
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: b001
+      responses:
+        "200":
+          description: Book details with delivery estimate and related books
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Book"
+                  - type: object
+                    properties:
+                      estimatedDelivery:
+                        type: string
+                        example: Fri Jun 06 2025
+                      related:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Book"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ─── Orders ──────────────────────────────────────────────
+  /orders:
+    get:
+      tags: [Orders]
+      summary: Get order history for authenticated user
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Order"
+    post:
+      tags: [Orders]
+      summary: Place a new order
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items, addressId, paymentMethod]
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      bookId:
+                        type: string
+                      qty:
+                        type: integer
+                addressId:
+                  type: string
+                paymentMethod:
+                  type: string
+                  enum: [card, paypal, apple, google]
+                useGiftPoints:
+                  type: boolean
+      responses:
+        "201":
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: "#/components/schemas/Order"
+                  giftPoints:
+                    type: integer
+
+  /orders/{id}/cancel:
+    post:
+      tags: [Orders]
+      summary: Cancel an order (within 48 hours)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order cancelled
+        "400":
+          description: Cancellation window has passed
+
+  # ─── Users ───────────────────────────────────────────────
+  /users/profile:
+    get:
+      tags: [Users]
+      summary: Get authenticated user's profile
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/recommendations:
+    get:
+      tags: [Users]
+      summary: Get personalised book recommendations based on order history
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Recommended books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  books:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Book"
+
+  /users/addresses:
+    post:
+      tags: [Users]
+      summary: Add a new delivery address
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressInput"
+      responses:
+        "201":
+          description: Address added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    $ref: "#/components/schemas/Address"
+                  addresses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Address"
+
+# ─── Components ──────────────────────────────────────────
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT bearer token
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        giftPoints:
+          type: integer
+        addresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Address"
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        postcode:
+          type: string
+        country:
+          type: string
+        isDefault:
+          type: boolean
+
+    AddressInput:
+      type: object
+      required: [street, city, postcode]
+      properties:
+        label:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        postcode:
+          type: string
+        country:
+          type: string
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          example: b001
+        title:
+          type: string
+        author:
+          type: string
+        category:
+          type: string
+        brand:
+          type: string
+        price:
+          type: number
+          format: float
+        originalPrice:
+          type: number
+          format: float
+        image:
+          type: string
+          description: Emoji representation
+        rating:
+          type: number
+          format: float
+        reviews:
+          type: integer
+        stock:
+          type: integer
+        deliveryDays:
+          type: integer
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        relatedIds:
+          type: array
+          items:
+            type: string
+
+    OrderItem:
+      type: object
+      properties:
+        bookId:
+          type: string
+        title:
+          type: string
+        qty:
+          type: integer
+        price:
+          type: number
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [confirmed, processing, shipped, delivered, cancelled]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        address:
+          $ref: "#/components/schemas/Address"
+        paymentMethod:
+          type: string
+        subtotal:
+          type: number
+        discount:
+          type: number
+        total:
+          type: number
+        canCancel:
+          type: boolean

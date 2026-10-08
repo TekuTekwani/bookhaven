@@ -1,0 +1,136 @@
+.confirmation-page {
+  padding: 2rem 0 4rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  min-height: calc(100vh - 64px);
+}
+
+.confirmation-card {
+  max-width: 680px;
+  margin: 0 auto;
+  border: 1px solid #e2e8f0;
+  padding: 2.5rem;
+}
+
+.confirmation-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.success-icon {
+  width: 72px;
+  height: 72px;
+  background: #16a34a;
+  color: white;
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+}
+
+.confirmation-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.confirmation-sub {
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.order-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.order-info-item {}
+.order-info-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+.order-info-value { font-weight: 600; color: #1e293b; font-size: 0.9rem; }
+.order-id { font-family: monospace; font-size: 1rem; color: #1e3a5f; }
+.cancel-hint { font-size: 0.82rem; color: #d97706; font-weight: 500; }
+
+.confirmation-section { margin-bottom: 1.5rem; }
+
+.conf-section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.address-display { font-size: 0.88rem; color: #475569; }
+
+.confirmation-items { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.conf-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.7rem;
+  background: #f8fafc;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+}
+.conf-item-name { flex: 1; color: #1e293b; font-weight: 500; }
+.conf-item-qty { color: #94a3b8; margin: 0 1rem; }
+.conf-item-price { font-weight: 600; }
+
+.conf-totals { display: flex; flex-direction: column; gap: 0.4rem; }
+.conf-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.87rem;
+  color: #475569;
+}
+.conf-total-row.green { color: #16a34a; }
+.conf-total-row.total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 0.25rem;
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.confirmation-actions .btn { flex: 1; justify-content: center; padding: 0.7rem; font-weight: 600; }
+
+.cancel-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  font-size: 0.83rem;
+  color: #92400e;
+}
+.cancel-icon { flex-shrink: 0; font-weight: 700; }
+.cancel-link { color: #1e3a5f; font-weight: 600; text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .confirmation-card { padding: 1.5rem; }
+  .order-info-grid { grid-template-columns: 1fr; }
+  .confirmation-actions { flex-direction: column; }
+}

@@ -1,0 +1,140 @@
+.catalogue-page { padding: 2rem 0; }
+
+.catalogue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.catalogue-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.catalogue-count {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+.catalogue-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.catalogue-sort .form-label { white-space: nowrap; }
+.catalogue-sort .form-input { min-width: 180px; }
+
+.catalogue-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.catalogue-sidebar {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  position: sticky;
+  top: 80px;
+}
+
+.sidebar-section { margin-bottom: 1.5rem; }
+.sidebar-section:last-of-type { margin-bottom: 0; }
+
+.sidebar-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sidebar-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.35rem;
+  font-size: 0.85rem;
+  color: #475569;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 0.1rem;
+}
+.sidebar-item:hover { background: #f1f5f9; color: #1e293b; }
+.sidebar-item.active {
+  background: #dbeafe;
+  color: #1e3a5f;
+  font-weight: 600;
+}
+
+.clear-filters-btn { width: 100%; margin-top: 0.5rem; font-size: 0.82rem; }
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #dbeafe;
+  color: #1e3a5f;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.filter-chip button {
+  background: none;
+  border: none;
+  color: #3b82d4;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.catalogue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1.25rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+.empty-state h3 { font-size: 1.2rem; color: #1e293b; margin-bottom: 0.5rem; }
+.empty-state p { color: #64748b; margin-bottom: 1.5rem; }
+
+@media (max-width: 900px) {
+  .catalogue-layout { grid-template-columns: 1fr; }
+  .catalogue-sidebar {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .sidebar-section { margin-bottom: 0; }
+}
+
+@media (max-width: 600px) {
+  .catalogue-grid { grid-template-columns: repeat(2, 1fr); }
+}
